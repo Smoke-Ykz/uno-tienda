@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0b0a">
+<title>Uno</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #0c0b0a;
+    --surface:   #161412;
+    --surface-2: #1a1815;
+    --border:    #1f1d1a;
+    --border-hi: #2b2824;
+    --text:      #e8e4dc;
+    --text-dim:  #8a8680;
+    --text-faint:#4a4844;
+    --accent:    #c73e2b;
+  }
+
+  html, body { background: var(--bg); }
+  body {
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 0 22px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ---------- CABECERA ---------- */
+  header {
+    padding: 32px 0 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 56px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .marca {
+    font-size: 16px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+  }
+  .marca .sello {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 14px;
+    flex-shrink: 0;
+  }
+  nav {
+    display: flex;
+    gap: 24px;
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  nav span {
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  nav span:hover { color: var(--text); }
+
+  /* ---------- INTRO ---------- */
+  .intro {
+    max-width: 560px;
+    margin: 0 0 88px;
+    font-size: 21px;
+    font-weight: 200;
+    line-height: 1.7;
+    color: var(--text-dim);
+    letter-spacing: 0.005em;
+  }
+  .intro em {
+    color: var(--text);
+    font-style: normal;
+  }
+
+  /* ---------- TÍTULO DE SECCIÓN ---------- */
+  .titulo-seccion {
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+
+  /* ---------- ESTANTE ---------- */
+  .estante {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  @media (min-width: 640px) {
+    .estante { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .estante { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .pieza {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 24px 22px 22px;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    display: flex;
+    flex-direction: column;
+  }
+  .pieza:hover {
+    border-color: var(--border-hi);
+    background: var(--surface-2);
+  }
+
+  .miniatura {
+    aspect-ratio: 4 / 3;
+    background: #0a0908;
+    border-radius: 2px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    border: 1px solid #14120f;
+  }
+
+  .pieza-nombre {
+    font-size: 15.5px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+  .pieza-desc {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .pieza-intencion {
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.55;
+    font-style: italic;
+    padding-top: 16px;
+    margin-bottom: 18px;
+    border-top: 1px solid var(--border);
+    flex: 1;
+  }
+  .pieza-precio {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .pieza-precio .moneda {
+    display: block;
+    font-size: 10.5px;
+    color: var(--text-faint);
+    letter-spacing: 0.18em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ---------- FICHA ---------- */
+  .ficha {
+    display: none;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .ficha.activa { display: block; }
+
+  .volver {
+    font-size: 10.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    margin-bottom: 44px;
+    display: inline-block;
+    transition: color 0.2s;
+  }
+  .volver:hover { color: var(--text); }
+
+  .ficha-imagen {
+    aspect-ratio: 16 / 10;
+    background: #0a0908;
+    border: 1px solid #14120f;
+    border-radius: 3px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  .ficha h1 {
+    font-size: 27px;
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+  .ficha-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.75;
+    margin-bottom: 28px;
+    max-width: 580px;
+  }
+  .ficha-intencion {
+    font-size: 13px;
+    color: var(--text-faint);
+    font-style: italic;
+    line-height: 1.7;
+    padding: 20px 22px;
+    background: var(--surface);
+    border-left: 2px solid var(--accent);
+    border-radius: 2px;
+    margin-bottom: 44px;
+    max-width: 580px;
+  }
+
+  .ficha-bloque {
+    border-top: 1px solid var(--border);
+    padding-top: 26px;
+    margin-bottom: 30px;
+  }
+  .ficha-bloque h3 {
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  .ficha-bloque ul,
+  .ficha-bloque ol {
+    list-style: none;
+    padding: 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.95;
+  }
+  .ficha-bloque li::before {
+    content: "—";
+    color: var(--text-faint);
+    margin-right: 12px;
+  }
+  .ficha-bloque ol { counter-reset: paso; }
+  .ficha-bloque ol li { counter-increment: paso; }
+  .ficha-bloque ol li::before {
+    content: counter(paso, decimal-leading-zero);
+    color: var(--text-faint);
+    margin-right: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ficha-compra {
+    border-top: 1px solid var(--border);
+    padding-top: 34px;
+    margin-top: 12px;
+  }
+  .ficha-precio {
+    font-size: 42px;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: 0.01em;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .ficha-precio .moneda {
+    display: block;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 10px;
+    font-weight: 400;
+  }
+
+  .boton-comprar {
+    display: block;
+    width: 100%;
+    background: var(--accent);
+    color: #f5f1ea;
+    border: none;
+    padding: 17px 20px;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-radius: 2px;
+    margin-top: 30px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+  .boton-comprar:hover { opacity: 0.9; }
+
+  .nota-compra {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  /* ---------- PIE ---------- */
+  footer {
+    margin-top: 130px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    font-size: 10.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ CABECERA ============ -->
+  <header>
+    <div class="marca"><span class="sello"></span>Uno</div>
+    <nav>
+      <span onclick="irAlEstante()">Estante</span>
+      <span>Sobre esto</span>
+      <span>Contacto</span>
+    </nav>
+  </header>
+
+  <!-- ============ VISTA 1: PORTADA + ESTANTE ============ -->
+  <main id="vista-estante">
+
+    <p class="intro">
+      Museo de uso.<br>
+      Existan o no. Pasaron por mí.<br>
+      <em>Sala propia.</em>
+    </p>
+
+    <div class="titulo-seccion">Estante</div>
+
+    <div class="estante" id="estante"></div>
+  </main>
+
+  <!-- ============ VISTA 2: FICHA ============ -->
+  <main id="vista-ficha" class="ficha">
+    <span class="volver" onclick="irAlEstante()">← Volver al estante</span>
+
+    <div class="ficha-imagen" id="f-imagen">—</div>
+
+    <h1 id="f-nombre">—</h1>
+    <p class="ficha-desc" id="f-desc">—</p>
+    <p class="ficha-intencion" id="f-intencion">—</p>
+
+    <div class="ficha-bloque">
+      <h3>Qué incluye</h3>
+      <ul id="f-incluye"></ul>
+    </div>
+
+    <div class="ficha-bloque">
+      <h3>Cómo se instala</h3>
+      <ol id="f-pasos"></ol>
+    </div>
+
+    <div class="ficha-bloque">
+      <h3>Nota</h3>
+      <ul>
+        <li>Uso personal. No revender ni redistribuir.</li>
+        <li>Funciona sin internet, sin cuentas, sin permisos.</li>
+      </ul>
+    </div>
+
+    <div class="ficha-compra">
+      <div class="ficha-precio">1
+        <span class="moneda">USD · ≈ $950 CLP</span>
+      </div>
+      <button class="boton-comprar">Añadir</button>
+      <p class="nota-compra">Pago seguro. Recibes el archivo al instante.</p>
+    </div>
+  </main>
+
+  <!-- ============ PIE ============ -->
+  <footer>
+    <span>Uno · 2026</span>
+    <span>Origen: Personal</span>
+  </footer>
+
+<script>
+  /* ----------------------------------------------------------
+     AQUÍ VIVEN TUS PRODUCTOS.
+     Para agregar uno: copia un bloque { ... } y pégalo abajo,
+     separándolo con una coma. Para quitar uno: borra su bloque.
+     ---------------------------------------------------------- */
+  const piezas = [
+    {
+      nombre: "Panel Mundial",
+      desc: "Reloj digital para tener un celular fijo como panel. Muestra tu hora local y tres ciudades: Londres, Nueva York y Tokio. En oscuro, con segundos visibles y formato horizontal.",
+      intencion: "Lo hice para no preguntar la hora en tres países cada vez que hablo con alguien. Ahora lo tengo siempre a la vista, sin abrir nada.",
+      incluye: [
+        "Archivo HTML listo para abrir en el navegador",
+        "Guía breve de instalación",
+        "Funciona sin internet, sin cuentas",
+        "Versión para celular y tablet"
+      ],
+      pasos: [
+        "Guarda el archivo en tu celular.",
+        "Ábrelo con Chrome.",
+        "Añádelo a la pantalla de inicio.",
+        "Gira el celular y toca la pantalla para pantalla completa."
+      ]
+    },
+    {
+      nombre: "Reloj Simple",
+      desc: "Lo mínimo necesario. Solo la hora, los segundos y la fecha, en una sola pantalla. Pensado para darle una segunda vida a un celular que ya no usas como teléfono.",
+      intencion: "Tenía un celular viejo guardado. En vez de botarlo, lo convertí en un reloj de mesa que ahora sí uso todos los días.",
+      incluye: [
+        "Archivo HTML",
+        "Modo horizontal y vertical",
+        "Sin menús, sin botones, solo el reloj"
+      ],
+      pasos: [
+        "Guarda el archivo en el celular.",
+        "Ábrelo con Chrome.",
+        "Añádelo a la pantalla de inicio.",
+        "Listo. Deja el celular donde quieras."
+      ]
+    },
+    {
+      nombre: "Panel Nocturno",
+      desc: "La misma idea del panel, pero con tonos más cálidos y menor brillo para dejarlo encendido de noche. Pensado para dormitorios, sin luz blanca que moleste.",
+      intencion: "El panel normal me despertaba de noche. Bajé el brillo, cambié el blanco por ámbar, y ahora puedo dormir con él encendido sin que me moleste.",
+      incluye: [
+        "Archivo HTML con paleta nocturna",
+        "Ajuste de brillo suave",
+        "Formato horizontal"
+      ],
+      pasos: [
+        "Guarda el archivo en el celular.",
+        "Ábrelo con Chrome.",
+        "Añádelo a la pantalla de inicio.",
+        "Deja el celular enchufado y con el brillo bajo."
+      ]
+    }
+  ];
+
+  const vistaEstante = document.getElementById('vista-estante');
+  const vistaFicha   = document.getElementById('vista-ficha');
+  const contenedor   = document.getElementById('estante');
+
+  /* Se construye el estante desde los datos, así no tienes
+     que escribir HTML cada vez que agregas un producto. */
+  piezas.forEach((p, i) => {
+    const card = document.createElement('article');
+    card.className = 'pieza';
+    card.onclick = () => abrirFicha(i);
+    card.innerHTML = `
+      <div class="miniatura">${p.nombre.toLowerCase()}</div>
+      <div class="pieza-nombre">${p.nombre}</div>
+      <div class="pieza-desc">${p.desc}</div>
+      <div class="pieza-intencion">${p.intencion}</div>
+      <div class="pieza-precio">1
+        <span class="moneda">USD · ≈ $950 CLP</span>
+      </div>
+    `;
+    contenedor.appendChild(card);
+  });
+
+  function abrirFicha(i) {
+    const p = piezas[i];
+    document.getElementById('f-imagen').textContent    = p.nombre.toLowerCase();
+    document.getElementById('f-nombre').textContent    = p.nombre;
+    document.getElementById('f-desc').textContent      = p.desc;
+    document.getElementById('f-intencion').textContent = p.intencion;
+
+    const ul = document.getElementById('f-incluye');
+    ul.innerHTML = '';
+    p.incluye.forEach(x => {
+      const li = document.createElement('li');
+      li.textContent = x;
+      ul.appendChild(li);
+    });
+
+    const ol = document.getElementById('f-pasos');
+    ol.innerHTML = '';
+    p.pasos.forEach(x => {
+      const li = document.createElement('li');
+      li.textContent = x;
+      ol.appendChild(li);
+    });
+
+    vistaEstante.style.display = 'none';
+    vistaFicha.classList.add('activa');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function irAlEstante() {
+    vistaFicha.classList.remove('activa');
+    vistaEstante.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+</script>
+</body>
+</html>
